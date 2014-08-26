@@ -390,11 +390,6 @@ var OC={
 		}
 	}, 500),
 	dialogs:OCdialogs,
-	mtime2date:function(mtime) {
-		mtime = parseInt(mtime,10);
-		var date = new Date(1000*mtime);
-		return date.getDate()+'.'+(date.getMonth()+1)+'.'+date.getFullYear()+', '+date.getHours()+':'+date.getMinutes();
-	},
 	
 	/**
 	 * Parses a URL query string into a JS map
