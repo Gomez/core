@@ -8,25 +8,28 @@
 
 namespace OC\Files\Storage;
 
-require_once __DIR__ . '/../3rdparty/smb4php/smb.php';
 
-class SMB_OC extends \OC\Files\Storage\SMB {
+use Icewind\SMB\Exception\AccessDeniedException;
+use Icewind\SMB\Exception\Exception;
+use Icewind\SMB\Server;
+
+class SMB_OC extends SMB {
 	private $username_as_share;
 
 	public function __construct($params) {
 		if (isset($params['host']) && \OC::$session->exists('smb-credentials')) {
-			$host=$params['host'];
+			$host = $params['host'];
 			$this->username_as_share = ($params['username_as_share'] === 'true');
 
 			$params_auth = \OC::$session->get('smb-credentials');
 			$user = \OC::$session->get('loginname');
 			$password = $params_auth['password'];
 
-			$root=isset($params['root'])?$params['root']:'/';
+			$root = isset($params['root']) ? $params['root'] : '/';
 			$share = '';
 
 			if ($this->username_as_share) {
-				$share = '/'.$user;
+				$share = '/' . $user;
 			} elseif (isset($params['share'])) {
 				$share = $params['share'];
 			} else {
@@ -44,7 +47,7 @@ class SMB_OC extends \OC\Files\Storage\SMB {
 		}
 	}
 
-	public static function login( $params ) {
+	public static function login($params) {
 		\OC::$session->set('smb-credentials', $params);
 	}
 
@@ -59,33 +62,15 @@ class SMB_OC extends \OC\Files\Storage\SMB {
 			}
 			return false;
 		} else {
-			$smb = new \smb();
-			$pu = $smb->parse_url($this->constructUrl(''));
+			$server = new Server($this->server->getHost(), '', '');
 
-			// Attempt to connect anonymously
-			$pu['user'] = '';
-			$pu['pass'] = '';
-
-			// Share cannot be checked if dynamic
-			if ($this->username_as_share) {
-				if ($smb->look($pu)) {
-					return true;
-				} else {
-					return false;
-				}
-			}
-			if (!$pu['share']) {
-				return false;
-			}
-
-			// The following error messages are expected due to anonymous login
-			$regexp = array(
-				'(NT_STATUS_ACCESS_DENIED)' => 'skip'
-			) + $smb->getRegexp();
-
-			if ($smb->client("-d 0 " . escapeshellarg('//' . $pu['host'] . '/' . $pu['share']) . " -c exit", $pu, $regexp)) {
+			try {
+				$server->listShares();
 				return true;
-			} else {
+			} catch (AccessDeniedException $e) {
+				// expected due to anonymous login
+				return true;
+			} catch (Exception $e) {
 				return false;
 			}
 		}
