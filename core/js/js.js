@@ -1272,11 +1272,22 @@ OC.Util = {
 	// TODO: remove original functions from global namespace
 	humanFileSize: humanFileSize,
 
+	/**
+	 *
+	 * @param timestamp
+	 * @param format
+	 * @returns {string} date formatted as requested
+	 */
 	formatDate: function (timestamp, format) {
 		format = format || "MMMM D, YYYY h:mm";
 		return moment(timestamp).format(format);
 	},
 
+	/**
+	 *
+	 * @param timestamp
+	 * @returns {string} human readable difference from now
+	 */
 	relativeModifiedDate: function (timestamp) {
 		return moment(timestamp).fromNow();
 	},
