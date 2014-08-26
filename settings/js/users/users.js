@@ -97,7 +97,7 @@ var UserList = {
 		var lastLoginAbs = lastLoginRel;
 		if(lastLogin !== 0) {
 			lastLogin = new Date(lastLogin * 1000);
-			lastLoginRel = relative_modified_date(lastLogin.getTime() / 1000);
+			lastLoginRel = relative_modified_date(lastLogin.getTime());
 			lastLoginAbs = formatDate(lastLogin.getTime());
 		}
 		var $tdLastLogin = $tr.find('td.lastLogin');
