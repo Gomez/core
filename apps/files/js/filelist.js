@@ -667,6 +667,9 @@
 			if (extension) {
 				nameSpan.append($('<span></span>').addClass('extension').text(extension));
 			}
+			if (fileData.extraData) {
+				nameSpan.addClass('modified').attr('title', fileData.extraData);
+			}
 			// dirs can show the number of uploaded files
 			if (type === 'dir') {
 				linkElem.append($('<span></span>').attr({

@@ -47,12 +47,18 @@ class Helper
 						$parts = explode('/', ltrim($dir, '/'));
 						$timestamp = substr(pathinfo($parts[0], PATHINFO_EXTENSION), 1);
 					}
+					$originalPath = \OCA\Files_Trashbin\Trashbin::getLocation($user, $id, $timestamp);
+					if (substr($originalPath, -1) === '/') {
+						$originalPath = substr($originalPath, 0, -1);
+					}
+					$originalPath .= '/'.$id;
 					$i = array(
 						'name' => $id,
 						'mtime' => $timestamp,
 						'mimetype' => \OC_Helper::getFileNameMimeType($id),
 						'type' => $view->is_dir($dir . '/' . $entryName) ? 'dir' : 'file',
 						'directory' => ($dir === '/') ? '' : $dir,
+						'extraData' => $originalPath,
 					);
 					$result[] = new FileInfo($absoluteDir . '/' . $i['name'], $storage, $internalPath . '/' . $i['name'], $i);
 				}

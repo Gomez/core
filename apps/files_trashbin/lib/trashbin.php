@@ -41,6 +41,17 @@ class Trashbin {
 		return array($uid, $filename);
 	}
 
+	public static function getLocation($user, $filename, $timestamp) {
+		$query = \OC_DB::prepare('SELECT `location` FROM `*PREFIX*files_trash`'
+			. ' WHERE `user`=? AND `id`=? AND `timestamp`=?');
+		$result = $query->execute(array($user, $filename, $timestamp))->fetchAll();
+		if (isset($result[0]['location'])) {
+			return $result[0]['location'];
+		} else {
+			return false;
+		}
+	}
+
 	private static function setUpTrash($user) {
 		$view = new \OC\Files\View('/' . $user);
 		if (!$view->is_dir('files_trashbin')) {
@@ -318,13 +329,10 @@ class Trashbin {
 
 		$location = '';
 		if ($timestamp) {
-			$query = \OC_DB::prepare('SELECT `location` FROM `*PREFIX*files_trash`'
-				. ' WHERE `user`=? AND `id`=? AND `timestamp`=?');
-			$result = $query->execute(array($user, $filename, $timestamp))->fetchAll();
-			if (count($result) !== 1) {
+			$location = self::getLocation($user, $filename, $timestamp);
+			if ($location === false) {
 				\OC_Log::write('files_trashbin', 'trash bin database inconsistent!', \OC_Log::ERROR);
 			} else {
-				$location = $result[0]['location'];
 				// if location no longer exists, restore file in the root directory
 				if ($location !== '/' &&
 					(!$view->is_dir('files' . $location) ||
