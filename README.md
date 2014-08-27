@@ -1,7 +1,7 @@
 # ownCloud
 
 [ownCloud](http://ownCloud.org) gives you freedom and control over your own data.
-A personal cloud which runs on your own server.
+A personal cloud which runs on your own server. yes
 
 ### Build Status on [Jenkins CI](https://ci.owncloud.org/)
 Git master: [![Build Status](https://ci.owncloud.org/job/server-master-linux/badge/icon)](https://ci.owncloud.org/job/server-master-linux/)
